@@ -1,0 +1,51 @@
+
+# ==========================================
+# Visual Studio
+# ==========================================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ==========================================
+# .NET / C#
+# ==========================================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# Archivos generados por compilación
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# ==========================================
+# NuGet
+# ==========================================
+packages/
+*.nupkg
+*.snupkg
+
+# ==========================================
+# Sistema operativo
+# ==========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# Editores y herramientas
+# ==========================================
+.vscode/
+.idea/

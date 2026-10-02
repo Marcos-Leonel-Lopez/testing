@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../UnitTestingxUnit.Tests/UnitTestingxUnit.Tests.csproj" />
+  <Project Path="app_carrito.csproj" />
+</Solution>
