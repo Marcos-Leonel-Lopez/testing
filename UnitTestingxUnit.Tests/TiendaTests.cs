@@ -1,4 +1,5 @@
 using Carrito;
+using Moq;
 
 namespace UnitTestingxUnit.Tests;
 
@@ -108,5 +109,39 @@ public class TiendaTests
         producto.ActualizarPrecio(1500);
 
         Assert.Equal(1500, producto.Precio);
+    }
+
+    [Fact]
+    public void AplicarDescuento_LlamaActualizarPrecio_ConPrecioCalculado()
+    {
+        // Doble de prueba: no se usa un Producto real como sujeto bajo prueba.
+        var productoMock = new Mock<Producto>("Pan", 100m, "Almacén");
+        var tienda = new Tienda();
+        tienda.AgregarProducto(productoMock.Object);
+
+        tienda.AplicarDescuento("Pan", 20m);
+
+        // Verifica la interacción: ActualizarPrecio se invoca una vez con 100 - 20% = 80.
+        productoMock.Verify(p => p.ActualizarPrecio(80m), Times.Once);
+    }
+
+    [Fact]
+    public void AplicarDescuento_PrecioReal100_Descuento20_NuevoPrecio80()
+    {
+        var tienda = new Tienda();
+        var producto = new Producto("Pan", 100m, "Almacén");
+        tienda.AgregarProducto(producto);
+
+        tienda.AplicarDescuento("Pan", 20m);
+
+        Assert.Equal(80m, producto.Precio);
+    }
+
+    [Fact]
+    public void AplicarDescuento_ProductoNoExistente_LanzaExcepcion()
+    {
+        var tienda = new Tienda();
+
+        Assert.Throws<ManejarExcepciones>(() => tienda.AplicarDescuento("Azúcar", 10m));
     }
 }
