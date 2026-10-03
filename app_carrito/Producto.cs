@@ -10,7 +10,22 @@ public class Producto
     /// Nombre del producto.
     public string Nombre { get; }
 
-    public decimal Precio { get; }
+    // Implementación anterior - Etapa 1:
+    // public decimal Precio { get; }
+
+    // Etapa 2: el precio ahora es actualizable mediante ActualizarPrecio.
+    public decimal Precio { get; private set; }
+
+    /// Actualiza el precio. Lanza ManejarExcepciones si el nuevo precio es negativo.
+    public void ActualizarPrecio(decimal nuevoPrecio)
+    {
+        if (nuevoPrecio < 0)
+        {
+            throw new ManejarExcepciones($"El precio no puede ser negativo: {nuevoPrecio}.");
+        }
+
+        Precio = nuevoPrecio;
+    }
 
     /// Categoría del producto.
     public string Categoria { get; }

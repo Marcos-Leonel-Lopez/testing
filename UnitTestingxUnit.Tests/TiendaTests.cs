@@ -17,7 +17,7 @@ public class TiendaTests
         Assert.Contains(tienda.Inventario, p => p.Nombre == "Pan");
         var agregado = tienda.Inventario.Single();
         Assert.Equal("Pan", agregado.Nombre);
-        Assert.Equal(100, agregado.Precio);
+        Assert.Equal(1000, agregado.Precio);
         Assert.Equal("Almacén", agregado.Categoria);
     }
 
@@ -46,36 +46,67 @@ public class TiendaTests
     }
 
     [Fact]
-    public void BuscarProducto_ProductoNoExistente_RetornaNull()
+    public void BuscarProducto_ProductoNoExistente_LanzaExcepcion()
     {
+        // Implementación anterior - Etapa 1:
+        // var resultado = tienda.BuscarProducto("Azúcar");
+        // Assert.Null(resultado);
+
+        // Etapa 2: ahora se espera una excepción cuando el producto no existe.
         var tienda = new Tienda();
         tienda.AgregarProducto(new Producto("Pan", 1000, "Almacén"));
 
-        var resultado = tienda.BuscarProducto("Azúcar");
-
-        Assert.Null(resultado);
+        var ex = Assert.Throws<ManejarExcepciones>(() => tienda.BuscarProducto("Azúcar"));
+        Assert.Contains("Azúcar", ex.Message);
     }
 
     [Fact]
-    public void EliminarProducto_ProductoAgregado_RetornaTrue()
+    public void EliminarProducto_ProductoAgregado_NoPermaneceEnElInventario()
     {
+        // Implementación anterior - Etapa 1:
+        // var eliminado = tienda.EliminarProducto(id);
+        // Assert.True(eliminado);
+
+        // Etapa 2: EliminarProducto ya no devuelve bool; solo debe eliminar sin lanzar.
         var tienda = new Tienda();
         tienda.AgregarProducto(new Producto("Pan", 1000, "Almacén"));
         var id = tienda.Inventario[0].IdProducto;
 
-        var eliminado = tienda.EliminarProducto(id);
-
-        Assert.True(eliminado);
+        tienda.EliminarProducto(id);
         Assert.Empty(tienda.Inventario);
     }
 
     [Fact]
-    public void EliminarProducto_IdInexistente_RetornaFalse()
+    public void EliminarProducto_IdInexistente_LanzaExcepcion()
     {
+        // Implementación anterior - Etapa 1:
+        // var eliminado = tienda.EliminarProducto(99);
+        // Assert.False(eliminado);
+
+        // Etapa 2: ahora se espera una excepción cuando el producto no existe.
         var tienda = new Tienda();
 
-        var eliminado = tienda.EliminarProducto(99);
+        Assert.Throws<ManejarExcepciones>(() => tienda.EliminarProducto(99));
+    }
 
-        Assert.False(eliminado);
+    [Fact]
+    public void ActualizarPrecio_PrecioNegativo_LanzaExcepcion()
+    {
+        var producto = new Producto("Pan", 1000, "Almacén");
+
+        Assert.Throws<ManejarExcepciones>(() => producto.ActualizarPrecio(-1m));
+
+        // El precio no debe haber cambiado.
+        Assert.Equal(1000, producto.Precio);
+    }
+
+    [Fact]
+    public void ActualizarPrecio_PrecioValido_CambiaElPrecio()
+    {
+        var producto = new Producto("Pan", 1000, "Almacén");
+
+        producto.ActualizarPrecio(1500);
+
+        Assert.Equal(1500, producto.Precio);
     }
 }

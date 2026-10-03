@@ -16,21 +16,41 @@ public class Tienda
         _inventario.Add(producto);
     }
 
-    /// Busca un producto por nombre exacto. Devuelve null si no existe.
-    public Producto? BuscarProducto(string nombre)
+    /// Busca un producto por nombre exacto. Lanza ManejarExcepciones si no existe.
+    public Producto BuscarProducto(string nombre)
     {
-        return _inventario.FirstOrDefault(p => p.Nombre == nombre);
+        // Implementación anterior - Etapa 1:
+        // return _inventario.FirstOrDefault(p => p.Nombre == nombre);
+
+        // Etapa 2: ahora se lanza una excepción cuando el producto no existe.
+        var producto = _inventario.FirstOrDefault(p => p.Nombre == nombre);
+        if (producto is null)
+        {
+            throw new ManejarExcepciones($"No existe un producto llamado '{nombre}'.");
+        }
+
+        return producto;
     }
 
-    /// Elimina el producto con el ID indicado. Devuelve false si no existe.
-    public bool EliminarProducto(int idProducto)
+    /// Elimina el producto con el ID indicado. Lanza ManejarExcepciones si no existe.
+    public void EliminarProducto(int idProducto)
     {
+        // Implementación anterior - Etapa 1:
+        // var producto = _inventario.FirstOrDefault(p => p.IdProducto == idProducto);
+        // if (producto is null)
+        // {
+        //     return false;
+        // }
+        // _inventario.Remove(producto);
+        // return true;
+
+        // Etapa 2: ahora se lanza una excepción cuando el producto no existe.
         var producto = _inventario.FirstOrDefault(p => p.IdProducto == idProducto);
         if (producto is null)
         {
-            return false;
+            throw new ManejarExcepciones($"No existe un producto con ID {idProducto}.");
         }
+
         _inventario.Remove(producto);
-        return true;
     }
 }
