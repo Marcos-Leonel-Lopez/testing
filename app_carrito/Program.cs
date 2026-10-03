@@ -51,14 +51,61 @@ while (true)
             Console.Write("Nombre a buscar: ");
             var buscado = Console.ReadLine() ?? "";
 
-            var resultado = tienda.BuscarProducto(buscado);
-            if (resultado is null)
+            // Opción 3 - buscar (antes: chequeo de null, ver STAGE_1_REPLICATION.md).
+            // Etapa 2: BuscarProducto lanza ManejarExcepciones si no existe.
+            try
             {
-                Console.WriteLine("Producto no encontrado.");
-            }
-            else
-            {
+                // Implementación anterior - Etapa 1:
+                // var resultado = tienda.BuscarProducto(buscado);
+                // if (resultado is null)
+                // {
+                //     Console.WriteLine("Producto no encontrado.");
+                // }
+                // else
+                // {
+                //     Console.WriteLine($"[{resultado.IdProducto}] {resultado.Nombre} - {resultado.Categoria} - ${resultado.Precio}");
+                // }
+
+                var resultado = tienda.BuscarProducto(buscado);
                 Console.WriteLine($"[{resultado.IdProducto}] {resultado.Nombre} - {resultado.Categoria} - ${resultado.Precio}");
+
+                Console.WriteLine("1. Actualizar precio");
+                Console.WriteLine("2. Salir");
+                Console.Write("Opción: ");
+                var opcionProducto = Console.ReadLine();
+
+                if (opcionProducto == "1")
+                {
+                    Console.Write("Nuevo precio: ");
+                    if (!decimal.TryParse(Console.ReadLine(), out var nuevoPrecio))
+                    {
+                        Console.WriteLine("Precio inválido.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            resultado.ActualizarPrecio(nuevoPrecio);
+                            Console.WriteLine($"Precio actualizado: ${resultado.Precio}");
+                        }
+                        catch (ManejarExcepciones ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }
+                else if (opcionProducto == "2")
+                {
+                    // Salir del submenú y continuar el bucle principal.
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida.");
+                }
+            }
+            catch (ManejarExcepciones ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             break;
 
@@ -70,9 +117,22 @@ while (true)
                 break;
             }
 
-            Console.WriteLine(tienda.EliminarProducto(id)
-                ? "Producto eliminado."
-                : "No existe un producto con ese ID.");
+            // Opción 4 - eliminar (antes: ternario sobre el bool).
+            // Etapa 2: EliminarProducto lanza ManejarExcepciones si no existe.
+            try
+            {
+                // Implementación anterior - Etapa 1:
+                // Console.WriteLine(tienda.EliminarProducto(id)
+                //     ? "Producto eliminado."
+                //     : "No existe un producto con ese ID.");
+
+                tienda.EliminarProducto(id);
+                Console.WriteLine("Producto eliminado.");
+            }
+            catch (ManejarExcepciones ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             break;
 
         case "5":
