@@ -16,8 +16,12 @@ public class Producto
     // Etapa 2: el precio ahora es actualizable mediante ActualizarPrecio.
     public decimal Precio { get; private set; }
 
+    // Implementación anterior - Etapa 2:
+    // public void ActualizarPrecio(decimal nuevoPrecio)
+
+    // Etapa 3: virtual para permitir sustitución del producto en pruebas (test double/mock).
     /// Actualiza el precio. Lanza ManejarExcepciones si el nuevo precio es negativo.
-    public void ActualizarPrecio(decimal nuevoPrecio)
+    public virtual void ActualizarPrecio(decimal nuevoPrecio)
     {
         if (nuevoPrecio < 0)
         {
