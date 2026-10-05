@@ -53,4 +53,14 @@ public class Tienda
 
         _inventario.Remove(producto);
     }
+
+    /// Aplica un descuento porcentual al precio del producto. Lanza ManejarExcepciones si el producto no existe.
+    public void AplicarDescuento(string nombreProducto, decimal porcentajeDescuento)
+    {
+        var producto = BuscarProducto(nombreProducto);
+        var nuevoPrecio = producto.Precio - (producto.Precio * porcentajeDescuento / 100);
+
+        // Etapa 3: se utiliza ActualizarPrecio para centralizar la modificación del precio.
+        producto.ActualizarPrecio(nuevoPrecio);
+    }
 }

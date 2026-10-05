@@ -69,8 +69,14 @@ while (true)
                 var resultado = tienda.BuscarProducto(buscado);
                 Console.WriteLine($"[{resultado.IdProducto}] {resultado.Nombre} - {resultado.Categoria} - ${resultado.Precio}");
 
+                // Implementación anterior - Etapa 2 (menú tras buscar):
+                // Console.WriteLine("1. Actualizar precio");
+                // Console.WriteLine("2. Salir");
+
+                // Etapa 3: se agrega aplicar descuento y se renumera la salida como "Volver".
                 Console.WriteLine("1. Actualizar precio");
-                Console.WriteLine("2. Salir");
+                Console.WriteLine("2. Aplicar descuento");
+                Console.WriteLine("3. Volver");
                 Console.Write("Opción: ");
                 var opcionProducto = Console.ReadLine();
 
@@ -96,9 +102,25 @@ while (true)
                 }
                 else if (opcionProducto == "2")
                 {
-                    // Salir del submenú y continuar el bucle principal.
+                    Console.Write("Porcentaje de descuento: ");
+                    if (!decimal.TryParse(Console.ReadLine(), out var porcentaje))
+                    {
+                        Console.WriteLine("Porcentaje inválido.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            tienda.AplicarDescuento(resultado.Nombre, porcentaje);
+                            Console.WriteLine($"Nuevo precio: ${resultado.Precio}");
+                        }
+                        catch (ManejarExcepciones ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
                 }
-                else
+                else if (opcionProducto != "3")
                 {
                     Console.WriteLine("Opción no válida.");
                 }

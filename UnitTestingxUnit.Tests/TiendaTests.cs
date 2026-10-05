@@ -4,60 +4,104 @@ using Moq;
 namespace UnitTestingxUnit.Tests;
 
 /// Pruebas de las operaciones básicas de Tienda y Producto.
-/// Etapa 1: cada prueba crea su propia Tienda (sin fixture ni dobles de prueba).
-public class TiendaTests
+/// Etapa 4: usa IClassFixture<TiendaFixture> para reutilizar el estado inicial;
+/// las pruebas destructivas y las de descuento conservan su propia Tienda.
+public class TiendaTests : IClassFixture<TiendaFixture>
 {
+    private readonly TiendaFixture _fixture;
+
+    public TiendaTests(TiendaFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
     [Fact]
     public void AgregarProducto_ProductoEstaEnElInventario()
     {
-        var tienda = new Tienda();
-        var producto = new Producto("Pan", 1000, "Almacén");
+        // Implementación anterior - Etapa 3:
+        // var tienda = new Tienda();
+        // var producto = new Producto("Pan", 1000, "Almacén");
+        //
+        // tienda.AgregarProducto(producto);
+        //
+        // Assert.Contains(tienda.Inventario, p => p.Nombre == "Pan");
+        // var agregado = tienda.Inventario.Single();
+        // Assert.Equal("Pan", agregado.Nombre);
+        // Assert.Equal(1000, agregado.Precio);
+        // Assert.Equal("Almacén", agregado.Categoria);
 
-        tienda.AgregarProducto(producto);
+        // Etapa 4: se agrega a la tienda del fixture; "Arroz" es un nombre exclusivo de esta prueba
+        // y Single() se filtra por nombre porque el inventario ya trae 3 productos.
+        var producto = new Producto("Arroz", 1500, "Almacén");
 
-        Assert.Contains(tienda.Inventario, p => p.Nombre == "Pan");
-        var agregado = tienda.Inventario.Single();
-        Assert.Equal("Pan", agregado.Nombre);
-        Assert.Equal(1000, agregado.Precio);
+        _fixture.Tienda.AgregarProducto(producto);
+
+        Assert.Contains(_fixture.Tienda.Inventario, p => p.Nombre == "Arroz");
+        var agregado = _fixture.Tienda.Inventario.Single(p => p.Nombre == "Arroz");
+        Assert.Equal("Arroz", agregado.Nombre);
+        Assert.Equal(1500, agregado.Precio);
         Assert.Equal("Almacén", agregado.Categoria);
     }
 
     [Fact]
     public void AgregarProducto_AsignaIdsIncrementales()
     {
-        var tienda = new Tienda();
-        tienda.AgregarProducto(new Producto("Pan", 1000, "Almacén"));
-        tienda.AgregarProducto(new Producto("Leche", 2000, "Lácteos"));
+        // Implementación anterior - Etapa 3:
+        // var tienda = new Tienda();
+        // tienda.AgregarProducto(new Producto("Pan", 1000, "Almacén"));
+        // tienda.AgregarProducto(new Producto("Leche", 2000, "Lácteos"));
+        //
+        // Assert.Equal(1, tienda.Inventario[0].IdProducto);
+        // Assert.Equal(2, tienda.Inventario[1].IdProducto);
 
-        Assert.Equal(1, tienda.Inventario[0].IdProducto);
-        Assert.Equal(2, tienda.Inventario[1].IdProducto);
+        // Etapa 4: los IDs se verifican de forma relativa al máximo existente en la tienda del fixture,
+        // porque otras pruebas pueden haber agregado productos antes.
+        var maxId = _fixture.Tienda.Inventario.Max(p => p.IdProducto);
+
+        _fixture.Tienda.AgregarProducto(new Producto("Aceite", 2500, "Almacén"));
+        _fixture.Tienda.AgregarProducto(new Producto("Harina", 1200, "Almacén"));
+
+        var aceite = _fixture.Tienda.Inventario.Single(p => p.Nombre == "Aceite");
+        var harina = _fixture.Tienda.Inventario.Single(p => p.Nombre == "Harina");
+        Assert.Equal(maxId + 1, aceite.IdProducto);
+        Assert.Equal(maxId + 2, harina.IdProducto);
     }
 
     [Fact]
     public void BuscarProducto_ProductoExistente_RetornaElProducto()
     {
-        var tienda = new Tienda();
-        var producto = new Producto("Pan", 1000, "Almacén");
-        tienda.AgregarProducto(producto);
+        // Implementación anterior - Etapa 3:
+        // var tienda = new Tienda();
+        // var producto = new Producto("Pan", 1000, "Almacén");
+        // tienda.AgregarProducto(producto);
+        //
+        // var resultado = tienda.BuscarProducto("Pan");
+        //
+        // Assert.NotNull(resultado);
+        // Assert.Same(producto, resultado);
 
-        var resultado = tienda.BuscarProducto("Pan");
+        // Etapa 4: se busca en la tienda del fixture y se compara con la referencia predefinida.
+        var resultado = _fixture.Tienda.BuscarProducto("Pan");
 
         Assert.NotNull(resultado);
-        Assert.Same(producto, resultado);
+        Assert.Same(_fixture.Pan, resultado);
     }
 
     [Fact]
     public void BuscarProducto_ProductoNoExistente_LanzaExcepcion()
     {
+        // Implementación anterior - Etapa 3:
+        // var tienda = new Tienda();
+        // tienda.AgregarProducto(new Producto("Pan", 1000, "Almacén"));
+
+        // Etapa 4: se busca en la tienda del fixture; "Azúcar" no está predefinido.
+
         // Implementación anterior - Etapa 1:
         // var resultado = tienda.BuscarProducto("Azúcar");
         // Assert.Null(resultado);
 
         // Etapa 2: ahora se espera una excepción cuando el producto no existe.
-        var tienda = new Tienda();
-        tienda.AgregarProducto(new Producto("Pan", 1000, "Almacén"));
-
-        var ex = Assert.Throws<ManejarExcepciones>(() => tienda.BuscarProducto("Azúcar"));
+        var ex = Assert.Throws<ManejarExcepciones>(() => _fixture.Tienda.BuscarProducto("Azúcar"));
         Assert.Contains("Azúcar", ex.Message);
     }
 
@@ -115,26 +159,26 @@ public class TiendaTests
     public void AplicarDescuento_LlamaActualizarPrecio_ConPrecioCalculado()
     {
         // Doble de prueba: no se usa un Producto real como sujeto bajo prueba.
-        var productoMock = new Mock<Producto>("Pan", 100m, "Almacén");
+        var productoMock = new Mock<Producto>("Pan", 1000m, "Almacén");
         var tienda = new Tienda();
         tienda.AgregarProducto(productoMock.Object);
 
-        tienda.AplicarDescuento("Pan", 20m);
+        tienda.AplicarDescuento("Pan", 20);
 
         // Verifica la interacción: ActualizarPrecio se invoca una vez con 100 - 20% = 80.
-        productoMock.Verify(p => p.ActualizarPrecio(80m), Times.Once);
+        productoMock.Verify(p => p.ActualizarPrecio(800m), Times.Once);
     }
 
     [Fact]
     public void AplicarDescuento_PrecioReal100_Descuento20_NuevoPrecio80()
     {
         var tienda = new Tienda();
-        var producto = new Producto("Pan", 100m, "Almacén");
+        var producto = new Producto("Pan", 1000, "Almacén");
         tienda.AgregarProducto(producto);
 
-        tienda.AplicarDescuento("Pan", 20m);
+        tienda.AplicarDescuento("Pan", 20);
 
-        Assert.Equal(80m, producto.Precio);
+        Assert.Equal(800, producto.Precio);
     }
 
     [Fact]
@@ -142,6 +186,6 @@ public class TiendaTests
     {
         var tienda = new Tienda();
 
-        Assert.Throws<ManejarExcepciones>(() => tienda.AplicarDescuento("Azúcar", 10m));
+        Assert.Throws<ManejarExcepciones>(() => tienda.AplicarDescuento("Azúcar", 1000));
     }
 }
