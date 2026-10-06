@@ -63,4 +63,21 @@ public class Tienda
         // Etapa 3: se utiliza ActualizarPrecio para centralizar la modificación del precio.
         producto.ActualizarPrecio(nuevoPrecio);
     }
+
+    /// Calcula el total del carrito de compras con los precios actuales del inventario.
+    /// Lanza ManejarExcepciones si alguno de los productos del carrito no existe.
+    public decimal CalcularTotalCarrito(List<string> nombresProductos)
+    {
+        decimal total = 0;
+
+        foreach (var nombre in nombresProductos)
+        {
+            // Etapa 5: se reutiliza BuscarProducto para obtener el precio actual
+            // (refleja actualizaciones y descuentos) y heredar su excepción si no existe.
+            var producto = BuscarProducto(nombre);
+            total += producto.Precio;
+        }
+
+        return total;
+    }
 }

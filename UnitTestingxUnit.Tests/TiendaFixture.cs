@@ -11,6 +11,10 @@ public class TiendaFixture
     public Producto Leche { get; }
     public Producto Queso { get; }
 
+    // Etapa 5: productos agregados como estado inicial de las pruebas del carrito.
+    public Producto Yerba { get; }
+    public Producto Cafe { get; }
+
     public TiendaFixture()
     {
         Tienda = new Tienda();
@@ -22,5 +26,11 @@ public class TiendaFixture
         Tienda.AgregarProducto(Pan);
         Tienda.AgregarProducto(Leche);
         Tienda.AgregarProducto(Queso);
+
+        Yerba = new Producto("Yerba", 800, "Almacén");
+        Cafe = new Producto("Café", 1200, "Almacén");
+
+        Tienda.AgregarProducto(Yerba);
+        Tienda.AgregarProducto(Cafe);
     }
 }
