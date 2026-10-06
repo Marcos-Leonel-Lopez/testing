@@ -1,15 +1,27 @@
 ﻿using Carrito;
 
 var tienda = new Tienda();
+var carrito = new List<string>();
 
 while (true)
 {
     Console.WriteLine("\n--- Tienda ---");
+
+    // Implementación anterior - Etapa 1 (menú principal):
+    // Console.WriteLine("1. Agregar producto");
+    // Console.WriteLine("2. Mostrar productos");
+    // Console.WriteLine("3. Buscar por nombre");
+    // Console.WriteLine("4. Eliminar por ID");
+    // Console.WriteLine("5. Salir");
+
+    // Etapa 5: se integra el carrito de compras y se renumera Salir.
     Console.WriteLine("1. Agregar producto");
     Console.WriteLine("2. Mostrar productos");
     Console.WriteLine("3. Buscar por nombre");
     Console.WriteLine("4. Eliminar por ID");
-    Console.WriteLine("5. Salir");
+    Console.WriteLine("5. Agregar producto al carrito");
+    Console.WriteLine("6. Calcular total del carrito");
+    Console.WriteLine("7. Salir");
     Console.Write("Opción: ");
 
     var opcion = Console.ReadLine();
@@ -158,6 +170,45 @@ while (true)
             break;
 
         case "5":
+            Console.Write("Nombre del producto a agregar al carrito: ");
+            var nombreCarrito = Console.ReadLine() ?? "";
+
+            try
+            {
+                tienda.BuscarProducto(nombreCarrito);
+                carrito.Add(nombreCarrito);
+                Console.WriteLine("Producto agregado al carrito.");
+            }
+            catch (ManejarExcepciones ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            break;
+
+        case "6":
+            if (carrito.Count == 0)
+            {
+                Console.WriteLine("El carrito está vacío.");
+                break;
+            }
+
+            try
+            {
+                var total = tienda.CalcularTotalCarrito(carrito);
+                Console.WriteLine($"Total del carrito: ${total}");
+            }
+            catch (ManejarExcepciones ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            break;
+
+        // Implementación anterior - Etapa 1:
+        // case "5":
+        //     return;
+
+        // Etapa 5: Salir pasa a la opción 7 por las nuevas opciones de carrito.
+        case "7":
             return;
 
         default:
